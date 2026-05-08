@@ -42,20 +42,20 @@ This project builds a SOC automation environment designed for hands-on practice 
 ┌─────────────────────────────────────────────────────────┐
 │                    SOC Analyst View                     │
 │              TheHive Case Management                    │
-│                  http://10.0.0.5:9000                   │
+│                  http://127.0.0.1:9000                  │
 └──────────────────────────┬──────────────────────────────┘
                            │ cases + alerts
 ┌──────────────────────────▼──────────────────────────────┐
 │                  Shuffle SOAR Engine                    │
-│               http://10.0.0.5:3001                      │
-│   [Enrich IOC] → [Classify Severity] → [Create Case]   │
+│               http://127.0.0.1:3001                     │
+│   [Enrich IOC] → [Classify Severity] → [Create Case]    │
 └──────────────────────────┬──────────────────────────────┘
                            │ webhook trigger
 ┌──────────────────────────▼──────────────────────────────┐
 │                   Splunk Enterprise                     │
 │                   Ubuntu Server                         │
-│                   IP: 10.0.0.5                          │
-│              http://10.0.0.5:8000                       │
+│                   IP: 10.0.0.8                          │
+│              http://127.0.0.1:8000                       │
 └───┬─────────────────────────────────────────────┬───────┘
     │ logs (Splunk UF)                             │ logs (Splunk UF)
 ┌───▼──────────────────┐               ┌──────────▼───────────┐
