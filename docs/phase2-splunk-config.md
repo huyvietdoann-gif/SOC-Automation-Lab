@@ -153,10 +153,10 @@ index=sysmon | stats count by host
 index=linux_logs | stats count by host
 index=linux_audit | stats count by host
 ```
-![](../screenshots/phase2/image10.png)
-![](../screenshots/phase2/image11.png)
-![](../screenshots/phase2/image12.png)
-![](../screenshots/phase2/image13.png)
+![](../screenshots/phase2/image10.jpg)
+![](../screenshots/phase2/image11.jpg)
+![](../screenshots/phase2/image12.jpg)
+![](../screenshots/phase2/image13.jpg)
 
 Expect result: can see data from both agents.
 
