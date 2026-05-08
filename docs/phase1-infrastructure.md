@@ -14,7 +14,8 @@ This phase covers deploying Splunk Enterprise, Shuffle, and TheHive on a single 
 ```bash
 wget -O splunk-10.2.3-4d61cf8a5c0c-linux-amd64.deb "https://download.splunk.com/products/splunk/releases/10.2.3/linux/splunk-10.2.3-4d61cf8a5c0c-linux-amd64.deb"
 ```
-![](../screenshots/phase1/image1.png)
+![](../screenshots/phase1/image2.png)
+
 ### Step 2 – Install
 
 ```bash
@@ -22,20 +23,23 @@ sudo dpkg -i splunk-10.2.3-4d61cf8a5c0c-linux-amd64.deb
 sudo /opt/splunk/bin/splunk start --accept-license --run-as-root
 ```
 ![](../screenshots/phase1/image6.png)
+![](../screenshots/phase1/image3.png)
+
 ### Step 3 – Enable autostart
 
 ```bash
 sudo /opt/splunk/bin/splunk enable boot-start --run-as-root
 
 ```
-![](../screenshots/phase1/image3.png)
 ### Step 4 – Verify
 
 ```bash
 sudo /opt/splunk/bin/splunk status
 ```
 ![](../screenshots/phase1/image9.png)
+
 Access dashboard: `http://127.0.0.1:8000`
+
 ![](../screenshots/phase1/image11.png)
 
 ---
@@ -67,7 +71,9 @@ cd Shuffle
 docker-compose up -d
 ```
 ![](../screenshots/phase1/image5.png)
+
 Access Shuffle: `http://10.0.0.8:3001`
+
 ![](../screenshots/phase1/image1.png)
 
 ### Verify containers running
