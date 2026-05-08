@@ -79,7 +79,7 @@ Network: 10.0.0.0/24 (Internal Lab Network)
 
 | VM | OS | IP | RAM | CPU | Role |
 |---|---|---|---|---|---|
-| Splunk + Shuffle + TheHive | Ubuntu 22.04 LTS | 10.0.0.5 | 8GB | 4 core | SIEM + SOAR + Case Mgmt |
+| Splunk + Shuffle + TheHive | Ubuntu 22.04 LTS | 10.0.0.6 | 8GB | 4 core | SIEM + SOAR + Case Mgmt |
 | Windows Agent | Windows 10 | 10.0.0.7 | 4GB | 2 core | Endpoint (Sysmon + Splunk UF) |
 | Linux Agent | Ubuntu 20.04 | 10.0.0.4 | 2GB | 2 core | Endpoint (Auditd + Splunk UF) |
 | Kali Attacker | Kali Linux | 10.0.0.x | 4GB | 2 core | Attack simulation |

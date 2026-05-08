@@ -6,56 +6,40 @@ This phase covers deploying Splunk Enterprise, Shuffle, and TheHive on a single 
 
 ---
 
-## 1.1 VM Specifications
-
-| VM | OS | IP | RAM | CPU | Disk |
-|---|---|---|---|---|---|
-| SOC Server | Ubuntu 22.04 LTS | 10.0.0.5 | 8GB | 4 core | 80GB |
-| Windows Agent | Windows 10 | 10.0.0.7 | 4GB | 2 core | 50GB |
-| Linux Agent | Ubuntu 20.04 | 10.0.0.4 | 2GB | 2 core | 30GB |
-| Kali Attacker | Kali Linux | 10.0.0.x | 4GB | 2 core | 40GB |
-
----
-
-## 1.2 Install Splunk Enterprise
-> Performed on: **Ubuntu – 10.0.0.5**
+## 1.1 Install Splunk Enterprise
+> Performed on: **Ubuntu – 10.0.0.6**
 
 ### Step 1 – Download Splunk
 
 ```bash
-wget -O splunk-9.2.1-linux-2.6-amd64.deb \
-  "https://download.splunk.com/products/splunk/releases/9.2.1/linux/splunk-9.2.1-linux-2.6-amd64.deb"
+wget -O splunk-10.2.3-4d61cf8a5c0c-linux-amd64.deb "https://download.splunk.com/products/splunk/releases/10.2.3/linux/splunk-10.2.3-4d61cf8a5c0c-linux-amd64.deb"
 ```
-
-> ⚠️ Lấy link download mới nhất tại: https://www.splunk.com/en_us/download/splunk-enterprise.html (yêu cầu tạo tài khoản free)
 
 ### Step 2 – Install
 
 ```bash
-sudo dpkg -i splunk-9.2.1-linux-2.6-amd64.deb
-sudo /opt/splunk/bin/splunk start --accept-license
+sudo dpkg -i splunk-10.2.3-4d61cf8a5c0c-linux-amd64.deb
+sudo /opt/splunk/bin/splunk start --accept-license --run-as-root
 ```
-
-Tạo admin credentials khi được hỏi lần đầu.
 
 ### Step 3 – Enable autostart
 
 ```bash
-sudo /opt/splunk/bin/splunk enable boot-start
+sudo /opt/splunk/bin/splunk enable boot-start --run-as-root
+
 ```
 
 ### Step 4 – Verify
 
 ```bash
-sudo systemctl status Splunkd
+sudo /opt/splunk/bin/splunk status
 ```
 
-Access dashboard: `http://10.0.0.5:8000`
+Access dashboard: `http://10.0.0.8:8000`
 
 ---
 
-## 1.3 Install Docker (for Shuffle + TheHive)
-> Shuffle và TheHive sẽ chạy qua Docker Compose
+## 1.2 Install Docker (for Shuffle + TheHive)
 
 ```bash
 # Install Docker
@@ -71,7 +55,7 @@ newgrp docker
 
 ---
 
-## 1.4 Install Shuffle
+## 1.3 Install Shuffle
 
 ```bash
 # Clone Shuffle repo
@@ -82,9 +66,8 @@ cd Shuffle
 docker-compose up -d
 ```
 
-Access Shuffle: `http://10.0.0.5:3001`
+Access Shuffle: `http://10.0.0.8:3001`
 
-Default credentials: tạo tài khoản mới lần đầu đăng nhập.
 
 ### Verify containers running
 
@@ -94,13 +77,13 @@ docker ps | grep shuffle
 
 ---
 
-## 1.5 Install TheHive 5
+## 1.4 Install TheHive 5
 
 ```bash
 mkdir thehive && cd thehive
 ```
 
-Tạo file `docker-compose.yml`:
+Create file `docker-compose.yml`:
 
 ```yaml
 version: "3"
@@ -132,7 +115,7 @@ Default credentials: `admin@thehive.local` / `secret`
 
 ---
 
-## 1.6 Summary – Services & Ports
+## 1.5 Summary – Services & Ports
 
 | Service | Port | URL |
 |---|---|---|
