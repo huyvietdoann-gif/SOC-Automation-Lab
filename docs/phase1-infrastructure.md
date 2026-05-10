@@ -132,5 +132,5 @@ Default credentials: `admin@thehive.local` / `secret`
 | Splunk Web | 8000 | http://127.0.0.1:8000 |
 | Splunk HEC | 8088 | http://10.0.0.8:8088 |
 | Splunk Receiver | 9997 | tcp://10.0.0.8:9997 |
-| Shuffle | 3001 | http://10.0.0.8:3001 |
+| Shuffle | 3001 | http://127.0.0.1:3001 |
 | TheHive | 9000 | http://127.0.0.1:9000 |
