@@ -21,14 +21,15 @@ This phase sets up an automated SOAR pipeline in Shuffle that:
 ## Complete Flow
 
 ```
-Webhook (Trigger)
-    └─→ Extract_Fields (Shuffle Tools)
-            └─→ Virustotal (IP Reputation)
-                    └─→ TheHive_1 (Create Case)
-                            └─→ TheHive_2 (Create Observable)
-                                    ├─→ [malicious > 5]  → TheHive_3a (severity = High)
-                                    ├─→ [malicious > 2]  → TheHive_3b (severity = Medium)
-                                    └─→ [default]        → TheHive_3c (severity = Low)
+Webhook 1 (Trigger)
+    └─→ Extract Fields (Shuffle Tools)
+            └─→ Virustotal v3 1 (IP Reputation)
+                    └─→ BuildDesc (Shuffle Tools)
+                            └─→ TheHive 1 (Create Case)
+                                    └─→ TheHive 2 (Create Observable)
+                                            ├─→ [malicious > 5]  → TheHive 3a (severity = High)
+                                            ├─→ [malicious > 2]  → TheHive 3b (severity = Medium)
+                                            └─→ [default]        → TheHive 3c (severity = Low)
 ```
 
 ---
@@ -66,7 +67,7 @@ Webhook (Trigger)
 | Type | Shuffle Tools |
 | Action | `repeat_back_to_me` |
 | Name | `Extract_Fields` |
-| Input | `$exec.result.src_ip` |
+| Call | `- src_ip=$exec.result.src_ip \n- user=$exec.result.user \n- rule=$exec.search_name \n- host=$exec.result.host` |
 
 Extracts `src_ip` from the Splunk alert payload for downstream use.
 ![](../screenshots/phase4/image2.png)
@@ -90,8 +91,25 @@ $virustotal.body.data.attributes.last_analysis_stats.malicious
 ![](../screenshots/phase4/image3.png)
 
 ---
+### Node 4 — BuildDesc (Shuffle Tools)
 
-### Node 4 — TheHive_1 (Create Case)
+| Field | Value |
+|-------|-------|
+| Type | Shuffle Tools |
+| Action | `repeat_back_to_me` |
+| Name | `BuildDesc` |
+| Call | `CyberShield system detected:\n- Source IP: $exec.result.src_ip\n- User: $exec.result.user\n- Host: $exec.result.host\n- Rule: $exec.search_name` |
+
+**Key output field used downstream:**
+```
+$builddesc.#
+```
+![](../screenshots/phase4/image15.png)
+
+---
+
+
+### Node 5 — TheHive_1 (Create Case)
 
 | Field | Value |
 |-------|-------|
@@ -103,7 +121,15 @@ $virustotal.body.data.attributes.last_analysis_stats.malicious
 
 **Body:**
 ```json
-{"title": "Test Case"}
+{
+  "title": "Splunk Alert: $exec.search_name",
+  "description": "$builddesc.#",
+  "severity": 2,
+  "tags": ["CyberShield", "Brute-Force"],
+  "tlp": 2,
+  "status": "New",
+  "type": "external"
+}
 ```
 
 **Key output field used downstream:**
@@ -112,10 +138,11 @@ $thehive_1.body._id
 ```
 
 > Note: Docker gateway IP `172.18.0.1` is used instead of `10.0.0.8` so Shuffle containers can reach TheHive.
+![](../screenshots/phase4/image16.png)
 
 ---
 
-### Node 5 — TheHive_2 (Create Observable)
+### Node 6 — TheHive_2 (Create Observable)
 
 | Field | Value |
 |-------|-------|
@@ -123,7 +150,7 @@ $thehive_1.body._id
 | Action | `post_create_observable_in_case` |
 | Name | `TheHive_2` |
 | Auth | `Auth for TheHive` |
-| IdOrName | `$thehive_1.body._id` |
+| CaseId | `$thehive_1.body._id` |
 
 **Body:**
 ```json
@@ -136,7 +163,7 @@ $thehive_1.body._id
 
 ---
 
-### Node 6a — TheHive_3a (Set Severity: High)
+### Node 7a — TheHive_3a (Set Severity: High)
 
 | Field | Value |
 |-------|-------|
@@ -152,10 +179,11 @@ $thehive_1.body._id
 $virustotal.body.data.attributes.last_analysis_stats.malicious > 5
 ```
 ![](../screenshots/phase4/image5.png)
+![](../screenshots/phase4/image8.png)
 
 ---
 
-### Node 6b — TheHive_3b (Set Severity: Medium)
+### Node 7b — TheHive_3b (Set Severity: Medium)
 
 | Field | Value |
 |-------|-------|
@@ -170,11 +198,11 @@ $virustotal.body.data.attributes.last_analysis_stats.malicious > 5
 ```
 $virustotal.body.data.attributes.last_analysis_stats.malicious > 2
 ```
-![](../screenshots/phase4/image6.png)
+![](../screenshots/phase4/image9.png)
 
 ---
 
-### Node 6c — TheHive_3c (Set Severity: Low)
+### Node 7c — TheHive_3c (Set Severity: Low)
 
 | Field | Value |
 |-------|-------|
@@ -186,7 +214,7 @@ $virustotal.body.data.attributes.last_analysis_stats.malicious > 2
 | severity | `1` |
 
 **Branch condition:** None (default / else branch)
-![](../screenshots/phase4/image7.png)
+![](../screenshots/phase4/image10.png)
 
 ---
 
@@ -197,10 +225,6 @@ $virustotal.body.data.attributes.last_analysis_stats.malicious > 2
 | > 5                       | High           | 3             |
 | > 2 and ≤ 5               | Medium         | 2             |
 | ≤ 2                       | Low            | 1             |
-
-![](../screenshots/phase4/image8.png)
-![](../screenshots/phase4/image9.png)
-![](../screenshots/phase4/image10.png)
 
 ---
 
@@ -235,10 +259,11 @@ curl -X POST http://10.0.0.8:3001/api/v1/hooks/webhook_f6d4c46d-d498-41cb-92a4-a
 
 ## Expected Results
 
-| Node | Expected Status |
-|------|----------------|
-| Extract_Fields | success |
-| Virustotal_1 | 200 OK |
+| Node | Expected Status  |
+|------|----------------  |
+| Extract_Fields | success|
+| Virustotal_1 | 200 OK   |
+| BuildDesc | success     |
 | TheHive_1 | 201 Created |
 | TheHive_2 | 201 Created |
 | TheHive_3a/3b/3c | 204 No Content (one of them) |
@@ -246,6 +271,8 @@ curl -X POST http://10.0.0.8:3001/api/v1/hooks/webhook_f6d4c46d-d498-41cb-92a4-a
 ![](../screenshots/phase4/image11.png)
 ![](../screenshots/phase4/image12.png)
 ![](../screenshots/phase4/image13.png)
+![](../screenshots/phase4/image6.png)
+![](../screenshots/phase4/image7.png)
 
 ---
 
