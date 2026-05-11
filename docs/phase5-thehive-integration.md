@@ -98,7 +98,7 @@ After investigation is complete:
 | `Indeterminate` | Insufficient evidence to conclude |
 
 3. Fill in summary notes describing findings and actions taken
-![](../screenshots/phase5/image5.png)
+![](../screenshots/phase5/image4.png)
 ![](../screenshots/phase5/image6.png)
 
 ---
